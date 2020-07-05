@@ -1,0 +1,36 @@
+{
+  "require": {
+    "php": ">=7.1.6",
+    "monolog/monolog": "@stable",
+    "hassankhan/config": "@stable",
+    "voku/anti-xss": "@stable",
+    "illuminate/view": "^5.1",
+    "filp/whoops": "@stable",
+    "graylog2/gelf-php": "@stable",
+    "php-amqplib/php-amqplib": "@stable",
+    "php-ds/php-ds": "@stable",
+    "symfony/console": "@stable"
+  },
+  "autoload": {
+    "psr-4": {
+      "Server\\": "server",
+      "App\\": "app",
+      "Test\\": "test"
+    },
+    "files": [
+      "server/Helpers/Common.php"
+    ]
+  },
+  "authors": [
+    {
+      "name": "sink",
+      "email": "21901734@qq.com",
+      "homepage": "https://github.com/sink-swoole"
+    }
+  ],
+  "name": "sink-swoole",
+  "type": "library",
+  "keywords": ["server", "swoole"],
+  "description": "In order to develop the api server",
+  "license": "MIT"
+}

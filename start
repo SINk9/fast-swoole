@@ -1,0 +1,28 @@
+#!/usr/local/bin/php
+<?php
+//默认时区定义
+date_default_timezone_set('Asia/Shanghai');
+//设置错误报告模式
+error_reporting(0);
+//设置默认区域
+setlocale(LC_ALL, "zh_CN.utf-8");
+//检查exec 函数是否启用
+if (!function_exists('exec')) {
+    exit('exec function is disabled' . PHP_EOL);
+}
+//检查命令 lsof 命令是否存在
+exec("whereis lsof", $out);
+if ($out[0] == 'lsof:') {
+    exit('lsof is not found' . PHP_EOL);
+}
+define("MYROOT", __DIR__);
+define("SERVER_DIR", MYROOT."/server");
+define("APP_DIR", MYROOT."/app");
+define("LUA_DIR", MYROOT."/lua");
+define("TMP_DIR", MYROOT."/tmp");
+define("LOG_DIR", MYROOT . "/tmp/log/");
+define("PID_DIR", MYROOT . "/tmp/pid/");
+define("CONFIG_DIR", MYROOT . "/config");
+require './vendor/autoload.php';
+\Server\Start::run();
+
