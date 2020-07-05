@@ -4,9 +4,14 @@
  * @Author: sink
  * @Date:   2019-08-05 11:53:03
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 17:57:44
+ * @Last Modified time: 2020-07-05 22:17:06
  */
 namespace Server;
+use Server\Asyn\IAsynPool;
+use Server\Asyn\Mysql\Miner;
+use Server\Asyn\Mysql\MysqlAsynPool;
+use Server\Asyn\Redis\RedisAsynPool;
+use Server\Asyn\Redis\RedisLuaManager;
 use Server\Process\ProcessManager;
 use Server\Process\HelpProcess;
 use Server\Process\TimerTaskProcess;
@@ -52,6 +57,32 @@ class ProxyServer extends WebSocketServer
      */
     private $initLock;
 
+   /**
+     * @var RedisAsynPool
+     */
+    public $redis_pool;
+    /**
+     * @var MysqlAsynPool
+     */
+    public $mysql_pool;
+
+    /**
+     * @var \Redis
+     */
+    protected $redis_client;
+    /**
+     * @var Miner
+     */
+    protected $mysql_client;
+
+    /**
+     * 连接池.
+     *
+     * @var
+     */
+    private $asynPools = [];
+
+
     /**
      * 重载锁
      * @var array
@@ -92,8 +123,16 @@ class ProxyServer extends WebSocketServer
     public function start()
     {
         parent::start();
-    }
+        if ($this->config->get('redis.enable', true)) {
+            //加载redis的lua脚本
+            $redis_pool = new RedisAsynPool($this->config, $this->config->get('redis.active'));
+            //$redisLuaManager = new RedisLuaManager($redis_pool->getSync());
+            //$redisLuaManager->registerFile(LUA_DIR);
+            $redis_pool->getSync()->close();
+            $redis_pool = null;
+        }
 
+    }
 
     /**
      * 获取实例
@@ -123,6 +162,15 @@ class ProxyServer extends WebSocketServer
     }
 
 
+    /**
+     * 获取同步mysql.
+     *
+     * @return Miner
+     */
+    public function getMysql()
+    {
+        return $this->mysql_pool->getSync();
+    }
 
     /**
      * 开始前创建共享内存保存USID值
@@ -256,6 +304,7 @@ class ProxyServer extends WebSocketServer
     public function onSwooleWorkerStart($serv, $workerId)
     {
         parent::onSwooleWorkerStart($serv, $workerId);
+        $this->initAsynPools($workerId);
         //进程锁保证只有一个进程会执行以下的代码,reload也不会执行
         if (!$this->isTaskWorker() && $this->initLock->trylock()) {
             //进程启动后进行开服的初始化
@@ -269,13 +318,69 @@ class ProxyServer extends WebSocketServer
     }
 
 
+
+    /**
+     * 初始化各种连接池.
+     *
+     * @param $workerId
+     *
+     * @throws SwooleException
+     */
+    public function initAsynPools($workerId)
+    {
+        $this->asynPools = [];
+        if ($this->config->get('redis.enable', true)) {
+            $this->addAsynPool('redisPool', new RedisAsynPool($this->config, $this->config->get('redis.active')));
+        }
+        if ($this->config->get('mysql.enable', true)) {
+            $this->addAsynPool('mysqlPool', new MysqlAsynPool($this->config, $this->config->get('mysql.active')));
+        }
+        $this->redis_pool = $this->asynPools['redisPool'] ?? null;
+        $this->mysql_pool = $this->asynPools['mysqlPool'] ?? null;
+    }
+
+
+  /**
+     * 添加AsynPool.
+     *
+     * @param $name
+     * @param $pool
+     *
+     * @throws SwooleException
+     */
+    public function addAsynPool($name, IAsynPool $pool)
+    {
+        if (array_key_exists($name, $this->asynPools)) {
+            throw  new SwooleException('pool key is exists!');
+        }
+        $pool->setName($name);
+        $this->asynPools[$name] = $pool;
+    }
+
+    /**
+     * 获取连接池.
+     *
+     * @param $name
+     *
+     * @return mixed
+     */
+    public function getAsynPool($name)
+    {
+        $pool = $this->asynPools[$name] ?? null;
+
+        return $pool;
+    }
+
+
     /**
      * 开服初始化(支持协程)
      * @return mixed
      */
     public function onOpenServiceInitialization()
     {
-
+       if ($this->mysql_pool != null) {
+            $this->mysql_pool->installDbBuilder();
+        }
     }
 
 
