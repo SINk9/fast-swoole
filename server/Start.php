@@ -67,7 +67,6 @@ class Start
      */
     public static function run()
     {
-
         self::$debug = new \swoole_atomic(0);
         self::$leader = new \swoole_atomic(0);
         self::$startTime = date('Y-m-d H:i:s');

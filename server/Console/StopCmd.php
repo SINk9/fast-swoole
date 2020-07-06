@@ -50,7 +50,7 @@ class StopCmd extends Command
 
         if (empty($master_pid)) {
             $io->warning("server $server_name not run");
-            return;
+            return 1;
         }
         if ($input->getOption('kill')) {
             $result = $io->confirm("Kill the $server_name server?", false);
@@ -63,7 +63,7 @@ class StopCmd extends Command
         }
         if ($input->getOption('kill')) {//kill -9
             exec("ps -ef|grep $server_name|grep -v grep|cut -c 9-15|xargs kill -9");
-            return;
+            return 1;
         }
         // Send stop signal to master process.
         $master_pid && posix_kill($master_pid, SIGTERM);
@@ -87,7 +87,7 @@ class StopCmd extends Command
             $io->success("server $server_name stop success");
             break;
         }
-
+        return 1;
     }
 
 }

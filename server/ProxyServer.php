@@ -125,11 +125,11 @@ class ProxyServer extends WebSocketServer
         parent::start();
         if ($this->config->get('redis.enable', true)) {
             //加载redis的lua脚本
-            $redis_pool = new RedisAsynPool($this->config, $this->config->get('redis.active'));
+            //$redis_pool = new RedisAsynPool($this->config, $this->config->get('redis.active'));
             //$redisLuaManager = new RedisLuaManager($redis_pool->getSync());
             //$redisLuaManager->registerFile(LUA_DIR);
-            $redis_pool->getSync()->close();
-            $redis_pool = null;
+            //$redis_pool->getSync()->close();
+            //$redis_pool = null;
         }
 
     }

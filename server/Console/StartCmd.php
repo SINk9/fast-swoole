@@ -49,7 +49,7 @@ class StartCmd extends Command
         $master_pid = exec("ps -ef | grep $server_name-Master | grep -v 'grep ' | awk '{print $2}'");
         if (!empty($master_pid)) {
             $io->warning("$server_name server already running");
-            return;
+            return 1;
         }
         $io->title('WELCOME START SWOOLE DISTRIBUTED, HAVE FUN!');
         $io->table(
@@ -106,5 +106,6 @@ class StartCmd extends Command
             $io->note("Set Debug Start success.");
         }
         $server->start();
+        return 1;
     }
 }

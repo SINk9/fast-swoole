@@ -11,6 +11,7 @@ namespace Server\Asyn\Mysql;
 use Server\Asyn\IAsynPool;
 use Server\Exceptions\SwooleException;
 use Server\Memory\Pool;
+use Server\ProxyServer;
 
 class MysqlAsynPool implements IAsynPool
 {
@@ -29,9 +30,9 @@ class MysqlAsynPool implements IAsynPool
     public function __construct($config, $active)
     {
         $this->active = $active;
-        $this->config = get_instance()->config;
+        $this->config = ProxyServer::getInstance()->config;
         $this->client_max_count = $this->config->get('mysql.asyn_max_count', 10);
-        if (get_instance()->isTaskWorker()) return;
+        if (ProxyServer::getInstance()->isTaskWorker()) return;
         $this->pool_chan = new \chan($this->client_max_count);
         for ($i = 0; $i < $this->client_max_count; $i++) {
             $client = new \Swoole\Coroutine\MySQL();

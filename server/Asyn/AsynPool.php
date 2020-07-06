@@ -94,7 +94,7 @@ abstract class AsynPool implements IAsynPool
         unset($this->callBacks[$token]);
         unset($this->clients[$token]);
         if ($callback != null) {
-            sd_call_user_func($callback, $data['result']);
+            call_user_func($callback, $data['result']);
         }
     }
 

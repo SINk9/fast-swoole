@@ -12,13 +12,14 @@ namespace Server\Controllers;
 
 use Server\SwooleConst;
 use Server\ProxyServer;
+use Server\CoreBase\CoreBase;
 use Server\Exceptions\SwooleException;
 use Server\Exceptions\SwooleNotFoundException;
 use Server\Exceptions\SwooleRedirectException;
 use Server\Exceptions\SwooleInterruptException;
 use Throwable;
 
-class Controller //extends BaseController
+class Controller extends CoreBase
 {
 
     /**
@@ -55,6 +56,18 @@ class Controller //extends BaseController
      * @var int
      */
     protected $fd;
+
+    /**
+     * @var Miner
+     */
+    public $db;
+
+    /**
+     * @var \Redis
+     */
+    protected $redis;
+
+    
     /**
      * uid
      * @var int
@@ -88,6 +101,7 @@ class Controller //extends BaseController
      */
     public function __construct()
     {
+        parent::__construct();
     	$this->instance = ProxyServer::getInstance();
     }
 
@@ -190,6 +204,10 @@ class Controller //extends BaseController
         if (!empty($this->uid)) {
             $this->context['uid'] = $this->uid;
         }
+
+        $this->db = $this->loader->mysql("mysqlPool",$this);
+        $this->redis = $this->loader->redis("redisPool");
+
     }
 
     /**

@@ -27,7 +27,7 @@ class Task extends TaskProxy
     {
         parent::__construct();
         if (self::$efficiency_monitor_enable == null) {
-            self::$efficiency_monitor_enable = $this->config['log']['efficiency_monitor_enable'];
+            self::$efficiency_monitor_enable = $this->config['log'][$this->config['log']['active']]['efficiency_monitor_enable'];
         }
     }
 

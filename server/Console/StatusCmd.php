@@ -88,6 +88,7 @@ class StatusCmd extends Command
         } else {
             $io->note("$server_name server not run");
         }
-        $this->info(sprintf('共消耗内存: %sM', memory_get_peak_usage() / 1024 / 1024));
+        $io->note(sprintf('共消耗内存: %sM', memory_get_peak_usage() / 1024 / 1024));
+        return 1;
     }
 }

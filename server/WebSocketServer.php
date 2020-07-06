@@ -75,8 +75,6 @@ abstract class WebSocketServer extends HttpServer
         //构建端口
         $this->portManager->buildPort($this, $first_config['socket_port']);
         $this->beforeSwooleStart();
-
-
         $this->server->start();
     }
 

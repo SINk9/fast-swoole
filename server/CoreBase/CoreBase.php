@@ -9,9 +9,12 @@
 
 namespace Server\CoreBase;
 
-
+use Monolog\Logger;
 use Server\Memory\Pool;
 use Server\ProxyServer;
+use Server\Asyn\Mysql\MysqlAsynPool;
+use Server\Asyn\Redis\RedisRoute;
+use Noodlehaus\Config;
 
 class CoreBase extends Child
 {
@@ -45,7 +48,7 @@ class CoreBase extends Child
     public function __construct()
     {
         if (!empty(ProxyServer::getInstance())) {
-            //$this->loader = ProxyServer::getInstance()->loader;
+            $this->loader = ProxyServer::getInstance()->loader;
             $this->logger = ProxyServer::getInstance()->logger;
             $this->server = ProxyServer::getInstance()->server;
             $this->config = ProxyServer::getInstance()->config;

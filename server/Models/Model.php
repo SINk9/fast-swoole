@@ -12,10 +12,38 @@
 namespace Server\Models;
 
 use Server\CoreBase\CoreBase;
-
+use Server\Asyn\Mysql\Miner;
 
 class Model extends CoreBase
 {
+
+    /**
+     * @var Miner
+     */
+    public $db;
+
+    /**
+     * @var \Redis
+     */
+    protected $redis;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+
+    /**
+     * 当被loader时会调用这个方法进行初始化
+     * @param $context
+     */
+    public function initialization(&$context)
+    {
+        $this->setContext($context);
+        $this->redis = $this->loader->redis("redisPool");
+        $this->db = $this->loader->mysql("mysqlPool",$this);
+    }
+
 
     /**
      * 销毁回归对象池

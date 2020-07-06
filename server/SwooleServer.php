@@ -12,6 +12,8 @@ use Noodlehaus\Config;
 use Server\Ports\PortManager;
 use Server\Exceptions\SwooleException;
 use Server\Controllers\ControllerFactory;
+use Server\CoreBase\ILoader;
+use Server\CoreBase\Loader;
 
 abstract class SwooleServer
 {
@@ -104,8 +106,11 @@ abstract class SwooleServer
         //$this->logger = logger()->stack(['swoole']);
         //$this->middlewareManager = new MiddlewareManager();
         $this->portManager = new PortManager($this->config['ports']);
-
+        if ($this->loader == null) {
+            $this->loader = new Loader();
+        }
     }
+
 
     /**
      * 启动
