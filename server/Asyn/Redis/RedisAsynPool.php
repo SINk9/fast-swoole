@@ -1,10 +1,9 @@
 <?php
 /**
- * redis 异步客户端连接池
- * Created by PhpStorm.
- * User: zhangjincheng
- * Date: 16-7-22
- * Time: 上午10:19
+ * @Author: sink
+ * @Date:   2019-08-05 14:23:28
+ * @Last Modified by:   sink <21901734@qq.com>
+ * @Last Modified time: 2020-07-07 17:59:54
  */
 
 namespace Server\Asyn\Redis;
@@ -44,12 +43,11 @@ class RedisAsynPool extends AsynPool
      */
     public function __call($name, $arguments)
     {
-        $callback = array_pop($arguments);
         $data = [
             'name' => $name,
             'arguments' => $arguments
         ];
-        $data['token'] = $this->addTokenCallback($callback);
+        $data['token'] = $this->addTokenCallback(null);
         $return = $this->execute($data);
         return $return;
     }
@@ -70,7 +68,6 @@ class RedisAsynPool extends AsynPool
         $arguments = $this->help_arguments($data);
         $data['arguments'] = $arguments;
         $data['token'] = $this->addTokenCallback($callback);
-        var_dump($data);
         $return = $this->execute($data);
 
         return $return;
@@ -316,53 +313,21 @@ class RedisAsynPool extends AsynPool
      */
     public function execute($data)
     {
-        echo 111;
         $client = $this->shiftFromPool($data);
-        echo 222;
         if ($client) {
-            $arguments = $data['arguments'];
-            $arguments[] = function ($client, $result) use ($data) {
-                switch (strtolower($data['name'])) {
-                    case 'hmget':
-                        $data['result'] = [];
-                        $count = count($result);
-                        for ($i = 0; $i < $count; $i++) {
-                            $data['result'][$data['M'][$i]] = $result[$i];
-                        }
-                        break;
-                    case 'hgetall':
-                        $data['result'] = [];
-                        $count = count($result);
-                        for ($i = 0; $i < $count; $i = $i + 2) {
-                            $data['result'][$result[$i]] = $result[$i + 1];
-                        }
-                        break;
-                    case 'zrevrangebyscore':
-                    case 'zrangebyscore':
-                    case 'zrevrange':
-                    case 'zrange':
-                        if ($data['withscores'] ?? false) {
-                            $data['result'] = [];
-                            $count = count($result);
-                            for ($i = 0; $i < $count; $i = $i + 2) {
-                                $data['result'][$result[$i]] = $result[$i + 1];
-                            }
-                        } else {
-                            $data['result'] = $result;
-                        }
-                        break;
-                    default:
-                        $data['result'] = $result;
-                }
-                unset($data['M']);
-                unset($data['arguments']);
-                unset($data['name']);
-                //分发消息
-                $this->distribute($data);
-                //回归连接
-                $this->pushToPool($client);
-            };
-            $data['result'] = call_user_func_array([$client, $data['name']], $arguments);
+            try {
+                $arguments = $data['arguments'];
+                $data['result'] = call_user_func_array([$client, $data['name']], $arguments);
+            } catch (\RedisException $e) {
+                $this->reconnect($client);
+                $this->execute($data);
+                // $this->commands->push($data);
+            }
+
+            //分发消息
+            $this->distribute($data);
+            //回归连接
+            $this->pushToPool($client);
             return $data['result'];
         }
     }

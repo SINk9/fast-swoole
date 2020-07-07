@@ -1,10 +1,11 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: zhangjincheng
- * Date: 16-9-1
- * Time: 下午4:25
+ * @Author: sink
+ * @Date:   2019-08-05 14:23:28
+ * @Last Modified by:   sink <21901734@qq.com>
+ * @Last Modified time: 2020-07-07 10:22:22
  */
+
 
 namespace Server\Asyn\Redis;
 
@@ -38,7 +39,7 @@ class RedisCoroutine
         $this->arguments = $arguments;
         $d = "[$name ".implode(" ",$arguments)."]";
         $this->request = "[redis]$d";
-        $callback = array_pop($this->arguments);
+        $callback = null; //未完善
         return $this->send($callback);
     }
 
@@ -59,7 +60,6 @@ class RedisCoroutine
 
     protected function onTimerOutHandle()
     {
-        parent::onTimerOutHandle();
         $this->redisAsynPool->destoryGarbage($this->token);
     }
 }

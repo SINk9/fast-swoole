@@ -8,8 +8,7 @@
 
 namespace Server\CoreBase;
 
-use Server\Asyn\Mysql\Miner;
-use Server\Asyn\Mysql\MysqlAsynPool;
+use Server\Asyn\Mysql\MysqlPool as MysqlConnection;
 use Server\Memory\Pool;
 use Server\ProxyServer;
 
@@ -17,6 +16,7 @@ class Loader implements ILoader
 {
     private $_task_proxy;
     private $_model_factory;
+    private $_mysql_container;
 
     public function __construct()
     {
@@ -53,13 +53,16 @@ class Loader implements ILoader
             $parent->root = $parent;
         }
         $root = $parent->root;
-        $core_name = MysqlAsynPool::AsynName . ":" .$name;
+        $core_name = MysqlConnection::AsynName . ":" .$name;
         if ($root->hasChild($core_name)) {
             return $root->getChild($core_name);
         }
-        $mysql_pool = ProxyServer::getInstance()->getAsynPool($name);
+        $pool = ProxyServer::getInstance()->getAsynPool($name);
+        return $pool->get();
+        $mysql_pool = $pool->get();
+
         if($mysql_pool == null) return null;
-        $db = $mysql_pool->installDbBuilder();
+        $db = $mysql_pool->getActiveConnection();
         $root->addChild($db);
         return $db;
     }

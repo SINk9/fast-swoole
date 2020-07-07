@@ -12,8 +12,6 @@ namespace Server\CoreBase;
 use Monolog\Logger;
 use Server\Memory\Pool;
 use Server\ProxyServer;
-use Server\Asyn\Mysql\MysqlAsynPool;
-use Server\Asyn\Redis\RedisRoute;
 use Noodlehaus\Config;
 
 class CoreBase extends Child

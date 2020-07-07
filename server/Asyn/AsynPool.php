@@ -107,12 +107,11 @@ abstract class AsynPool implements IAsynPool
         if ($this->pool->count() == 0) {//代表目前没有可用的连接
             $this->prepareOne();
             $this->commands->push($data);
-            return false;
-        } else {
-            $client = $this->pool->shift();
-            $this->clients[$data['token']] = $client;
-            return $client;
-        }
+        } 
+
+        $client = $this->pool->shift();
+        $this->clients[$data['token']] = $client;
+        return $client;
     }
 
     /**

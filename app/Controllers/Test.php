@@ -17,13 +17,12 @@ class Test extends Controller
      */
     public function index()
     {
-
-    	$array = [1,2,3,4,5];
-    	$data = $this->redis->hset('test',1,json_encode($array));
-    	$rs = $this->redis->hget('test',1);
+        $data = $this->db;
+        var_dump($data);
+        
 
         $this->response->header("Content-Type", "text/html; charset=utf-8");
-        $this->response->end("<h1>Hello Swoole. #".json_encode($rs)."</h1>");
+        $this->response->end("<h1>Hello Swoole. #".rand(1,10000)."</h1>");
     }
 
 }

@@ -9,7 +9,9 @@
     "graylog2/gelf-php": "@stable",
     "php-amqplib/php-amqplib": "@stable",
     "php-ds/php-ds": "@stable",
-    "symfony/console": "@stable"
+    "symfony/console": "@stable",
+    "hyperf/database": "^2.0",
+    "hyperf/pool": "^2.0"
   },
   "autoload": {
     "psr-4": {

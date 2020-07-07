@@ -8,8 +8,8 @@
  */
 namespace Server;
 use Server\Asyn\IAsynPool;
-use Server\Asyn\Mysql\Miner;
-use Server\Asyn\Mysql\MysqlAsynPool;
+use Server\Asyn\Mysql\MysqlPool;
+use Server\Memory\Container;
 use Server\Asyn\Redis\RedisAsynPool;
 use Server\Asyn\Redis\RedisLuaManager;
 use Server\Process\ProcessManager;
@@ -21,6 +21,7 @@ use Server\Tasks\TaskProxy;
 
 class ProxyServer extends WebSocketServer
 {
+
 
     const SERVER_NAME = "SWOOLE";
 
@@ -62,7 +63,7 @@ class ProxyServer extends WebSocketServer
      */
     public $redis_pool;
     /**
-     * @var MysqlAsynPool
+     * @var Mysql Connection
      */
     public $mysql_pool;
 
@@ -333,8 +334,9 @@ class ProxyServer extends WebSocketServer
             $this->addAsynPool('redisPool', new RedisAsynPool($this->config, $this->config->get('redis.active')));
         }
         if ($this->config->get('mysql.enable', true)) {
-            $this->addAsynPool('mysqlPool', new MysqlAsynPool($this->config, $this->config->get('mysql.active')));
+            $this->addAsynPool('mysqlPool', new MysqlPool(Container::getInstance()));
         }
+  
         $this->redis_pool = $this->asynPools['redisPool'] ?? null;
         $this->mysql_pool = $this->asynPools['mysqlPool'] ?? null;
     }
@@ -378,9 +380,9 @@ class ProxyServer extends WebSocketServer
      */
     public function onOpenServiceInitialization()
     {
-       if ($this->mysql_pool != null) {
-            $this->mysql_pool->installDbBuilder();
-        }
+       // if ($this->mysql_pool != null) {
+       //      $this->mysql_pool->installDbBuilder();
+       //  }
     }
 
 
