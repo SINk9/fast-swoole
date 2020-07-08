@@ -83,7 +83,9 @@ class Connection extends BaseConnection
         if ($this->check()) {
             return $this;
         }
-        return $this->reconnect();
+        $this->reconnect();
+
+        return $this->connection;
     }
 
 
@@ -101,7 +103,7 @@ class Connection extends BaseConnection
 
             // Reset reconnector after db reconnect.
             $this->connection->setReconnector(function ($connection) {
-                $this->logger->warning('Database connection refreshing.');
+                //$this->logger->warning('Database connection refreshing.');
                 if ($connection instanceof \Hyperf\Database\Connection) {
                     $this->refresh($connection);
                 }
@@ -109,7 +111,7 @@ class Connection extends BaseConnection
         }
 
         $this->lastUseTime = microtime(true);
-        return $this->connection;
+        return true;
     }
 
 
@@ -123,7 +125,11 @@ class Connection extends BaseConnection
         if ($this->connection != null) {
             return $this->connection;
         }
-        return $this->reconnect();
+        if(! $this->connection()){
+            throw new SwooleException('Connection reconnect failed.');
+        }
+
+        return $this->connection();
     }
 
 
