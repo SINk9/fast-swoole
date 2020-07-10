@@ -4,7 +4,7 @@
  * @Author: sink
  * @Date:   2019-08-12 15:11:35
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 18:00:23
+ * @Last Modified time: 2020-07-09 18:35:18
  */
 
 namespace Server\CoreBase;
@@ -54,6 +54,18 @@ class Child
         $child->onAddChild($this);
         $this->child_list[$child->core_name] = $child;
     }
+
+
+    /**
+     * 加入一个Child
+     * @param $child Child
+     */
+    public function newAddChild($core_name, $child)
+    {
+        if ($child == null) return;
+        $this->child_list[$core_name] = $child;
+    }
+
 
     /**
      * 被加入列表时

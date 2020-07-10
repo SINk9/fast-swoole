@@ -3,13 +3,13 @@
  * @Author: sink
  * @Date:   2019-08-05 14:35:15
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 21:39:30
+ * @Last Modified time: 2020-07-09 14:25:57
  */
 
 namespace Server\Console;
 
 
-use Server\ProxyServer;
+use App\AppServer;
 use Server\Ports\PortManager;
 use Noodlehaus\Config;
 use Server\Start;
@@ -99,7 +99,7 @@ class StartCmd extends Command
         } else {
             $io->note("Press Ctrl-C to quit. Start success.");
         }
-        $server = new ProxyServer();
+        $server = new AppServer();
         //是否Debug
         if ($input->getOption('debug')) {
             Start::setDebug(true);

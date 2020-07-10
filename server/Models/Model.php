@@ -6,13 +6,12 @@
  * @Author: sink
  * @Date:   2019-08-29 18:33:58
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 17:59:34
+ * @Last Modified time: 2020-07-10 12:52:14
  */
 
 namespace Server\Models;
 
 use Server\CoreBase\CoreBase;
-use Server\Asyn\Mysql\Miner;
 
 class Model extends CoreBase
 {
@@ -40,8 +39,8 @@ class Model extends CoreBase
     public function initialization(&$context)
     {
         $this->setContext($context);
-        $this->redis = $this->loader->redis("redisPool");
-        $this->db = $this->loader->mysql("mysqlPool",$this);
+        $this->redis = $this->loader->redis("redisPool", $this);
+        $this->db = $this->loader->mysql("mysqlPool", $this);
     }
 
 

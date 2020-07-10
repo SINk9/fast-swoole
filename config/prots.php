@@ -3,7 +3,7 @@
  * @Author: sink
  * @Date:   2019-08-05 15:00:55
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 18:24:44
+ * @Last Modified time: 2020-07-10 17:06:21
  */
 
 use Server\Ports\PortManager;
@@ -16,9 +16,9 @@ return [
             'socket_name'           => '0.0.0.0',
             'socket_port'           => 8081,
             'route_tool'            => 'NormalRoute',
-            'pack_tool'             => 'NonJsonPack',
+            'pack_tool'             => 'NonJsonPack', //数据包格式
             'opcode'                => PortManager::WEBSOCKET_OPCODE_TEXT,
-            'middlewares'           => [''], //中间件
+            'middlewares'           => [], //中间件
             //事件触发默认值
             'event_controller_name' => null, //服务链接事件控制器
             'method_prefix'         => null, //方法前缀
@@ -29,9 +29,8 @@ return [
             'socket_type'           => PortManager::SOCK_HTTP,
             'socket_name'           => '0.0.0.0',
             'socket_port'           => 8082,
-            'route_tool'            => 'NormalRoute',
-            'pack_tool'             => 'NonJsonPack',
-            'middlewares'           => [''], //中间件
+            'route_tool'            => 'NormalRoute', //路由
+            'middlewares'           => [], //中间件
         ],
     ],
 ];

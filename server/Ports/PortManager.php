@@ -4,7 +4,7 @@
  * @Author: sink
  * @Date:   2019-08-05 14:35:15
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 21:12:36
+ * @Last Modified time: 2020-07-10 17:05:49
  */
 
 namespace Server\Ports;
@@ -153,9 +153,9 @@ class PortManager
         //路由
         $this->routes[$value['socket_port']] = self::createRoute($value['route_tool']);
         //中间件
-        // foreach ($value['middlewares'] ?? [] as $middleware) {
-        //     $this->middlewares[$value['socket_port']][] = $this->createMiddleware($middleware);
-        // }
+        foreach ($value['middlewares'] ?? [] as $middleware) {
+            $this->middlewares[$value['socket_port']][] = $this->createMiddleware($middleware);
+        }
 
 
     }

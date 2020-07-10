@@ -3,7 +3,7 @@
  * @Author: sink
  * @Date:   2019-08-05 14:23:28
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 17:59:54
+ * @Last Modified time: 2020-07-10 16:54:56
  */
 
 namespace Server\Asyn\Redis;
@@ -60,7 +60,7 @@ class RedisLuaManager
     {
         $exists = $this->redis->script("exists", ...$sha1s);
         if($exists==false){
-            secho("REDIS", "该RedisServer不支持lua脚本。");
+            LogEcho("REDIS", "该RedisServer不支持lua脚本。");
             return;
         }
         $count = count($exists);
@@ -69,7 +69,7 @@ class RedisLuaManager
                 $this->redis->script("load", $luas[$i]);
             }
             self::$registerMap[$names[$i]] = $sha1s[$i];
-            secho("RLUA", "已加载$names[$i]脚本");
+            LogEcho("RLUA", "已加载$names[$i]脚本");
         }
 
     }

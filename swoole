@@ -4,6 +4,10 @@
 date_default_timezone_set('Asia/Shanghai');
 //设置错误报告模式
 //error_reporting(0);
+
+ // 报告所有错误
+//error_reporting(E_ALL);
+
 //设置默认区域
 setlocale(LC_ALL, "zh_CN.utf-8");
 //检查exec 函数是否启用

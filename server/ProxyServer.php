@@ -1,21 +1,21 @@
 <?php
 
 /**
+ * 根节点
  * @Author: sink
  * @Date:   2019-08-05 11:53:03
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 22:17:06
+ * @Last Modified time: 2020-07-10 12:49:57
  */
 namespace Server;
-use Server\Asyn\IAsynPool;
-use Server\Asyn\Mysql\MysqlPool;
 use Server\Memory\Container;
-use Server\Asyn\Redis\RedisAsynPool;
-use Server\Asyn\Redis\RedisLuaManager;
+use Server\Asyn\Mysql\MysqlPool;
+use Server\Asyn\Redis\RedisPool;
 use Server\Process\ProcessManager;
 use Server\Process\HelpProcess;
 use Server\Process\TimerTaskProcess;
 use Server\TimerTasks\TimerTask;
+use Server\TimerTasks\Timer;
 use Server\Exceptions\SwooleException;
 use Server\Tasks\TaskProxy;
 
@@ -124,15 +124,6 @@ class ProxyServer extends WebSocketServer
     public function start()
     {
         parent::start();
-        if ($this->config->get('redis.enable', true)) {
-            //加载redis的lua脚本
-            //$redis_pool = new RedisAsynPool($this->config, $this->config->get('redis.active'));
-            //$redisLuaManager = new RedisLuaManager($redis_pool->getSync());
-            //$redisLuaManager->registerFile(LUA_DIR);
-            //$redis_pool->getSync()->close();
-            //$redis_pool = null;
-        }
-
     }
 
     /**
@@ -192,9 +183,11 @@ class ProxyServer extends WebSocketServer
         $this->task_lock = new \swoole_lock(SWOOLE_MUTEX);
         //init锁
         $this->initLock = new \swoole_lock(SWOOLE_RWLOCK);
+        //Timer
+        Timer::init();
+
         //开启用户进程
         $this->startProcess();
-
         //reload锁
         for ($i = 0; $i < $this->worker_num; $i++) {
             $lock = new \swoole_lock(SWOOLE_MUTEX);
@@ -330,13 +323,17 @@ class ProxyServer extends WebSocketServer
     public function initAsynPools($workerId)
     {
         $this->asynPools = [];
+        // if ($this->config->get('redis.enable', true)) {
+        //     $this->addAsynPool('redisPool', new RedisAsynPool($this->config, $this->config->get('redis.active')));
+        // }
         if ($this->config->get('redis.enable', true)) {
-            $this->addAsynPool('redisPool', new RedisAsynPool($this->config, $this->config->get('redis.active')));
+            $this->addAsynPool('redisPool', new RedisPool($this->config->get('redis'), Container::getInstance()));
         }
+
         if ($this->config->get('mysql.enable', true)) {
-            $this->addAsynPool('mysqlPool', new MysqlPool(Container::getInstance()));
+            $this->addAsynPool('mysqlPool', new MysqlPool($this->config->get('mysql'), Container::getInstance()));
         }
-  
+
         $this->redis_pool = $this->asynPools['redisPool'] ?? null;
         $this->mysql_pool = $this->asynPools['mysqlPool'] ?? null;
     }
@@ -350,12 +347,11 @@ class ProxyServer extends WebSocketServer
      *
      * @throws SwooleException
      */
-    public function addAsynPool($name, IAsynPool $pool)
+    public function addAsynPool($name, $pool)
     {
         if (array_key_exists($name, $this->asynPools)) {
             throw  new SwooleException('pool key is exists!');
         }
-        $pool->setName($name);
         $this->asynPools[$name] = $pool;
     }
 
@@ -424,7 +420,7 @@ class ProxyServer extends WebSocketServer
                 $task_data = $message['task_fuc_data']; //任务方法传参
                 $task_context = $message['task_context']; //上下文
                 //给task做初始化操作
-                $task->initialization($task_id, $from_id, $this->server->worker_pid, $task_name, $task_fuc_name, $task_context);
+                $task->initialization($task_id, $from_id, $this->server->worker_pid, $task_name, $task_fuc_name, $task_data, $task_context);
                 $task->execute($task_fuc_name);
                 return true;
             default:

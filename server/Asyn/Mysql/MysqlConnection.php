@@ -4,7 +4,7 @@ declare(strict_types=1);
  * @Author: sink
  * @Date:   2019-08-05 14:35:15
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 21:56:09
+ * @Last Modified time: 2020-07-10 14:05:01
  */
 
 namespace Server\Asyn\Mysql;
@@ -12,13 +12,14 @@ namespace Server\Asyn\Mysql;
 use Hyperf\Pool\Connection as BaseConnection;;
 use Server\Exceptions\SwooleException;
 use Server\ProxyServer;
+use Server\Asyn\Mysql\Traits\DbConnection;
 use Hyperf\Database\ConnectionInterface as DbConnectionInterface;
 use Hyperf\Database\Connectors\ConnectionFactory;
 use Psr\Container\ContainerInterface;
-//use Psr\EventDispatcher\EventDispatcherInterface;
 
-class Connection extends BaseConnection
+class MysqlConnection extends BaseConnection implements DbConnectionInterface
 {
+    use DbConnection;
 
     private $active;
 
@@ -75,17 +76,18 @@ class Connection extends BaseConnection
      */
     public function getActiveConnection(): DbConnectionInterface
     {
-
         if (ProxyServer::getInstance()->isTaskWorker()) {
+            LogEcho('RedisConnection:','Sync');
             return $this->getSync();
         }
 
         if ($this->check()) {
             return $this;
         }
-        $this->reconnect();
-
-        return $this->connection;
+        if(!$this->reconnect()){
+            throw new SwooleException('Connection reconnect failed.');
+        }
+        return $this;
     }
 
 
@@ -93,7 +95,6 @@ class Connection extends BaseConnection
     public function reconnect(): bool
     {
         $this->connection = $this->factory->make($this->config);
-
         if ($this->connection instanceof \Hyperf\Database\Connection) {
             // Reset event dispatcher after db reconnect.
             // if ($this->container->has(EventDispatcherInterface::class)) {
@@ -109,7 +110,6 @@ class Connection extends BaseConnection
                 }
             });
         }
-
         $this->lastUseTime = microtime(true);
         return true;
     }
@@ -123,13 +123,13 @@ class Connection extends BaseConnection
     public function getSync()
     {
         if ($this->connection != null) {
-            return $this->connection;
+            return $this;
         }
-        if(! $this->connection()){
+        if(! $this->reconnect()){
             throw new SwooleException('Connection reconnect failed.');
         }
 
-        return $this->connection();
+        return $this;
     }
 
 

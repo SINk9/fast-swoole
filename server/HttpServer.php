@@ -4,7 +4,7 @@
  * @Author: sink
  * @Date:   2019-08-05 11:54:05
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 17:57:49
+ * @Last Modified time: 2020-07-10 13:01:02
  */
 
 namespace Server;
@@ -104,10 +104,12 @@ abstract class HttpServer extends SwooleServer
                     throw new SwooleNotFoundException('no controller');
                 }
             } catch (\Throwable $e) {
+                LogEcho('onSwooleRequest:', $e->getMessage());
                 $route->errorHttpHandle($e, $request, $response);
             }
 
         } catch (Exception $e) {
+            LogEcho('onSwooleRequest:', $e->getMessage());
             //被中断
         }
 

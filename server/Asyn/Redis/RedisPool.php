@@ -1,24 +1,27 @@
 <?php
 
-declare(strict_types=1);
 /**
  * @Author: sink
- * @Date:   2019-08-05 14:35:15
+ * @Date:   2020-07-10 11:13:32
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-10 12:09:38
+ * @Last Modified time: 2020-07-10 12:44:09
  */
 
-namespace Server\Asyn\Mysql;
+declare(strict_types=1);
+namespace Server\Asyn\Redis;
+
 use Hyperf\Contract\ConnectionInterface;
 use Hyperf\Pool\Pool;
 use Psr\Container\ContainerInterface;
 
-
-class MysqlPool extends Pool
+class RedisPool extends Pool
 {
 
-    const AsynName = 'database:';
+    const AsynName = 'redis:';
 
+    /**
+     * @var array
+     */
     protected $config;
 
     public function __construct($config, ContainerInterface $container)
@@ -26,14 +29,12 @@ class MysqlPool extends Pool
         $this->config = $config;
         $options = $config[$config['active']]['pool'];
         parent::__construct($container, $options);
+
     }
 
 
     protected function createConnection(): ConnectionInterface
     {
-        return new MysqlConnection($this->container, $this, $this->config);
+        return new RedisConnection($this->container, $this, $this->config);
     }
-
-
-
 }

@@ -3,12 +3,13 @@
  * @Author: sink
  * @Date:   2019-08-12 15:11:07
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 18:00:26
+ * @Last Modified time: 2020-07-10 12:57:54
  */
 
 namespace Server\CoreBase;
 
-use Server\Asyn\Mysql\MysqlPool as MysqlConnection;
+use Server\Asyn\Mysql\MysqlPool;
+use Server\Asyn\Redis\RedisPool;
 use Server\Memory\Pool;
 use Server\ProxyServer;
 
@@ -29,13 +30,27 @@ class Loader implements ILoader
      * @param $name
      * @return \Redis
      */
-    public function redis($name)
+    public function redis($name, Child $parent)
     {
+        if (empty($name)) {
+            return null;
+        }
+        if($parent->root == null){
+            $parent->root = $parent;
+        }
+        $root = $parent->root;
+        $core_name = RedisPool::AsynName . ":" .$name;
+        if ($root->hasChild($core_name)) {
+            return $root->getChild($core_name);
+        }
         $redisPool = ProxyServer::getInstance()->getAsynPool($name);
+        $redisPool = $redisPool->get();
         if($redisPool == null){
             return null;
         }
-        return $redisPool->getCoroutine();
+        $redisCoroutine = $redisPool->getActiveConnection();
+        $root->newAddChild($core_name, $redisCoroutine);
+        return $redisCoroutine;
     }
 
     /**
@@ -53,19 +68,20 @@ class Loader implements ILoader
             $parent->root = $parent;
         }
         $root = $parent->root;
-        $core_name = MysqlConnection::AsynName . ":" .$name;
+        $core_name = MysqlPool::AsynName . ":" .$name;
         if ($root->hasChild($core_name)) {
             return $root->getChild($core_name);
         }
-        $pool = ProxyServer::getInstance()->getAsynPool($name);
-        return $pool->get();
-        $mysql_pool = $pool->get();
-
-        if($mysql_pool == null) return null;
-        $db = $mysql_pool->getActiveConnection();
-        $root->addChild($db);
-        return $db;
+        $mysqlPool = ProxyServer::getInstance()->getAsynPool($name);
+        $mysqlPool = $mysqlPool->get();
+        if($mysqlPool == null){
+            return null;
+        }
+        $mysqlContainer = $mysqlPool->getActiveConnection();
+        $root->newAddChild($core_name, $mysqlContainer);
+        return $mysqlContainer;
     }
+
 
     /**
      * 获取一个model
@@ -92,8 +108,8 @@ class Loader implements ILoader
      * @return mixed|null|TaskProxy
      * @throws SwooleException
      */
-    
-    
+
+
     public function task($task, Child $parent = null)
     {
         if (empty($task)) {
@@ -112,6 +128,6 @@ class Loader implements ILoader
         $task_instance->reUse();
         return $task_instance;
     }
-    
+
 
 }

@@ -4,7 +4,7 @@
  * @Author: sink
  * @Date:   2019-08-05 11:53:51
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 17:57:18
+ * @Last Modified time: 2020-07-10 10:40:14
  */
 
 namespace Server;
@@ -58,7 +58,7 @@ abstract class WebSocketServer extends HttpServer
         $this->server->on('WorkerStart', [$this, 'onSwooleWorkerStart']);
         $this->server->on('WorkerStop', [$this, 'onSwooleWorkerStop']);
         $this->server->on('Task', [$this, 'onSwooleTask']);
-        $this->server->on('Finish', [$this, 'onSwooleFinish']);
+        $this->server->on('finish', [$this, 'onSwooleFinish']);
         $this->server->on('WorkerError', [$this, 'onSwooleWorkerError']);
         $this->server->on('PipeMessage', [$this, 'onSwoolePipeMessage']);
         $this->server->on('ManagerStart', [$this, 'onSwooleManagerStart']);

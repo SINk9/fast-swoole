@@ -1,80 +1,20 @@
 <?php
+
 /**
  * @Author: sink
- * @Date:   2019-08-05 14:23:28
+ * @Date:   2020-07-10 13:33:09
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-07 17:59:54
+ * @Last Modified time: 2020-07-10 13:37:20
  */
-
 namespace Server\Asyn\Redis;
 
-use Server\Asyn\AsynPool;
-use Server\Exceptions\SwooleException;
-use Server\Memory\Pool;
-use Server\ProxyServer;
-
-class RedisAsynPool extends AsynPool
+/**
+ * @method bool select(int $db)
+ */
+class RedisQueryHelp
 {
-    const AsynName = 'redis';
-    /**
-     * 连接
-     * @var array
-     */
-    public $connect;
-    private $active;
-    private $coroutineRedisHelp;
-    private $redis_client;
-    protected $name;
 
-
-    public function __construct($config, $active)
-    {
-        parent::__construct($config);
-        $this->active = $active;
-        $this->coroutineRedisHelp = new CoroutineRedisHelp($this);
-        $this->client_max_count = $this->config->get('redis.asyn_max_count', 10);
-    }
-
-    /**
-     * 映射redis方法
-     * @param $name
-     * @param $arguments
-     * @return int
-     */
-    public function __call($name, $arguments)
-    {
-        $data = [
-            'name' => $name,
-            'arguments' => $arguments
-        ];
-        $data['token'] = $this->addTokenCallback(null);
-        $return = $this->execute($data);
-        return $return;
-    }
-
-
-    /**
-     * @param $name
-     * @param $arguments
-     * @param $callback
-     * @return array
-     */
-    public function call($name, $arguments, $callback)
-    {
-        $data = [
-            'name' => $name,
-            'arguments' => $arguments
-        ];
-        $arguments = $this->help_arguments($data);
-        $data['arguments'] = $arguments;
-        $data['token'] = $this->addTokenCallback($callback);
-        $return = $this->execute($data);
-
-        return $return;
-    }
-
-
-    protected function help_arguments(&$data)
+    public static function arguments(&$data)
     {
         $arguments = $data['arguments'];
         $dataName = strtolower($data['name']);
@@ -306,156 +246,4 @@ class RedisAsynPool extends AsynPool
     }
 
 
-
-    /**
-     * 执行redis命令
-     * @param $data
-     */
-    public function execute($data)
-    {
-        $client = $this->shiftFromPool($data);
-        if ($client) {
-            try {
-                $arguments = $data['arguments'];
-                $data['result'] = call_user_func_array([$client, $data['name']], $arguments);
-            } catch (\RedisException $e) {
-                $this->reconnect($client);
-                $this->execute($data);
-                // $this->commands->push($data);
-            }
-
-            //分发消息
-            $this->distribute($data);
-            //回归连接
-            $this->pushToPool($client);
-            return $data['result'];
-        }
-    }
-
-
-    /**
-     * 重连或者连接
-     * @param null $client
-     */
-    public function reconnect($client = null)
-    {
-        if ($client == null) {
-            $client = new \Redis();
-        }
-
-        if ($client->connect($this->config['redis'][$this->active]['ip'], $this->config['redis'][$this->active]['port']) == false) {
-            throw new SwooleException($client->getLastError());
-            $client = null;
-        }
-        if (!empty($this->config->get('redis.' . $this->active . '.password', ""))) {//存在验证
-            if ($client->auth($this->config['redis'][$this->active]['password']) == false) {
-                throw new SwooleException($client->getLastError());
-                $client = null;
-            }
-        }
-        if ($this->config->has('redis.' . $this->active . '.select')) {//存在select
-            $client->select($this->config['redis'][$this->active]['select']);
-        }
-        $this->pushToPool($client);
-    }
-
-
-
-    /**
-     * 准备一个redis
-     */
-    public function prepareOne()
-    {
-        if (parent::prepareOne()) {
-            $this->reconnect();
-        }
-    }
-
-
-
-    /**
-     * 协程模式
-     * @param string $name
-     * @param array ...$arg
-     * @param callable $set
-     * @return RedisCoroutine
-     * @throws SwooleException
-     */
-    public function coroutineSend($name, $arg, callable $set = null)
-    {
-        if (ProxyServer::getInstance()->isTaskWorker()) {//如果是task进程自动转换为同步模式
-            try {
-                $value = call_user_func_array([$this->getSync(), $name], $arg);
-            } catch (\RedisException $e) {
-                $this->redis_client = null;
-                $value = call_user_func_array([$this->getSync(), $name], $arg);
-            }
-            return $value;
-        } else {
-            return Pool::getInstance()->get(RedisCoroutine::class)->init($this, $name, $arg, $set);
-        }
-    }
-
-    /**
-     * 获取同步
-     * @return \Redis
-     * @throws SwooleException
-     */
-    public function getSync()
-    {
-        if ($this->redis_client != null) {
-            return $this->redis_client;
-        }
-        //同步redis连接，给task使用
-        $this->redis_client = new \Redis();
-        if ($this->redis_client->connect($this->config['redis'][$this->active]['ip'], $this->config['redis'][$this->active]['port']) == false) {
-            throw new SwooleException($this->redis_client->getLastError());
-            $this->redis_client = null;
-        }
-        if (!empty($this->config->get('redis.' . $this->active . '.password', ""))) {//存在验证
-            if ($this->redis_client->auth($this->config['redis'][$this->active]['password']) == false) {
-                throw new SwooleException($this->redis_client->getLastError());
-                $this->redis_client = null;
-            }
-        }
-        if ($this->config->has('redis.' . $this->active . '.select')) {//存在select
-            $this->redis_client->select($this->config['redis'][$this->active]['select']);
-        }
-        return $this->redis_client;
-    }
-
-    /**
-     * 协程模式 更加便捷
-     * @return \Redis
-     * @throws SwooleException
-     */
-    public function getCoroutine()
-    {
-        return $this->coroutineRedisHelp;
-    }
-
-
-
-
-    /**
-     * @return string
-     */
-    public function getAsynName()
-    {
-        return self::AsynName . ":" . $this->name;
-    }
-
-    /**
-     * 销毁Client
-     * @param \Redis $client
-     */
-    protected function destoryClient($client)
-    {
-        $client->close();
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
 }

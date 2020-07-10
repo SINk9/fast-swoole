@@ -4,21 +4,13 @@
  * @Author: sink
  * @Date:   2019-08-12 10:12:39
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 18:00:29
+ * @Last Modified time: 2020-07-09 12:43:47
  */
 
 namespace Server\Controllers;
 
-class ActionController extends Controller
+class DemoController extends Controller
 {
-
-	/**
-	 * * 初始化
-	 */
-    protected function initialization($controller_name, $method_name)
-    {
-        parent::initialization($controller_name, $method_name);
-    }
 
     /**
      * 连接开启

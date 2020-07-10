@@ -5,7 +5,7 @@
  * @Author: sink
  * @Date:   2019-08-12 13:11:46
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 17:58:11
+ * @Last Modified time: 2020-07-09 10:59:20
  */
 
 namespace Server\TimerTasks;
@@ -50,7 +50,7 @@ class Timer
             $data = self::$table->get($object->data);
             if ($data['wid'] == ProxyServer::getInstance()->getWorkerId()) {
                 self::$table->del($object->data);
-                \swoole_timer_clear($data['tid']);
+                \Swoole\Timer::clear($data['tid']);
             }
         });
     }
@@ -66,7 +66,7 @@ class Timer
         if (self::$table->exist($name)) {
             throw new SwooleException("存在相同名字的定时器");
         }
-        $tid = \swoole_timer_tick($ms, function () use ($callback) {
+        $tid = \Swoole\Timer::tick($ms, function () use ($callback) {
             $child = Pool::getInstance()->get(Child::class);
             call_user_func($callback, $child);
             $child->destroy();

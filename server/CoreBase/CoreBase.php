@@ -4,7 +4,7 @@
  * @Author: sink
  * @Date:   2019-08-12 15:11:07
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 18:00:26
+ * @Last Modified time: 2020-07-09 10:56:45
  */
 
 namespace Server\CoreBase;
@@ -78,7 +78,7 @@ class CoreBase extends Child
     protected function log($message, $level = Logger::DEBUG)
     {
         try {
-            $this->logger->addRecord($level, $message, $this->getContext());
+            //$this->logger->addRecord($level, $message, $this->getContext());
         } catch (\Exception $e) {
 
         }

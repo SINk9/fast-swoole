@@ -5,7 +5,7 @@
  * @Author: sink
  * @Date:   2019-08-09 11:58:15
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 18:00:42
+ * @Last Modified time: 2020-07-10 14:07:03
  */
 
 namespace Server\Controllers;
@@ -67,7 +67,7 @@ class Controller extends CoreBase
      */
     protected $redis;
 
-    
+
     /**
      * uid
      * @var int
@@ -89,6 +89,11 @@ class Controller extends CoreBase
      */
     protected $response;
 
+
+    public $HttpResponse;
+
+    public $HttpRequest;
+
     /**
      * [$instance description]
      * @var [type]
@@ -102,6 +107,7 @@ class Controller extends CoreBase
     public function __construct()
     {
         parent::__construct();
+        $this->HttpResponse = new HttpResponse($this);
     	$this->instance = ProxyServer::getInstance();
     }
 
@@ -142,6 +148,7 @@ class Controller extends CoreBase
      */
     public function setRequestResponse($request, $response, $controller_name, $method_name, $params)
     {
+        $this->HttpResponse->set($request,$response);
         $this->request = $request;
         $this->response = $response;
         $this->request_type = SwooleConst::HTTP_REQUEST;
@@ -204,9 +211,8 @@ class Controller extends CoreBase
         if (!empty($this->uid)) {
             $this->context['uid'] = $this->uid;
         }
-
-        $this->db = $this->loader->mysql("mysqlPool",$this);
-        $this->redis = $this->loader->redis("redisPool");
+        $this->db = $this->loader->mysql('mysqlPool',$this);
+        $this->redis = $this->loader->redis('redisPool', $this);
 
     }
 
@@ -281,6 +287,7 @@ class Controller extends CoreBase
         $this->client_data = null;
         $this->request = null;
         $this->response = null;
+        //$this->db->release();
         ControllerFactory::getInstance()->revertController($this);
     }
 

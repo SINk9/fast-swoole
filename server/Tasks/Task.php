@@ -5,7 +5,7 @@
  * @Author: sink
  * @Date:   2019-08-12 15:19:48
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 17:58:28
+ * @Last Modified time: 2020-07-10 12:52:06
  */
 
 namespace Server\Tasks;
@@ -18,11 +18,22 @@ class Task extends TaskProxy
     protected $start_run_time;
     protected static $efficiency_monitor_enable;
 
+   /**
+     * @var db
+     */
+    public $db;
 
     /**
      * @var \Redis
      */
     protected $redis;
+
+    /**
+     * @var parameter
+     */
+    protected $parameter;
+
+
     public function __construct()
     {
         parent::__construct();
@@ -39,7 +50,7 @@ class Task extends TaskProxy
      * @param $method_name
      * @param $context
      */
-    public function initialization($task_id, $from_id, $worker_pid, $task_name, $method_name, $context)
+    public function initialization($task_id, $from_id, $worker_pid, $task_name, $method_name, $arguments, $context)
     {
         $this->task_id = $task_id;
         $this->from_id = $from_id;
@@ -47,6 +58,9 @@ class Task extends TaskProxy
         $this->setContext($context);
         $this->start_run_time = microtime(true);
         $this->context['task_name'] = "$task_name:$method_name";
+        $this->parameter = $arguments;
+        $this->db = $this->loader->mysql('mysqlPool', $this);
+        $this->redis = $this->loader->redis('redisPool', $this);
     }
 
 
@@ -78,6 +92,7 @@ class Task extends TaskProxy
         // }
         ProxyServer::getInstance()->tid_pid_table->del($this->from_id . $this->task_id);
         $this->task_id = 0;
+        $this->parameter = null;
         Pool::getInstance()->push($this);
     }
 
