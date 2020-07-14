@@ -11,6 +11,7 @@ return [
 	'redis' => [
 		'enable' => true,
 		'active' => 'default',
+		
 	    'default' => [
 	        'host'           => '127.0.0.1',
 	        'auth'           => '',
