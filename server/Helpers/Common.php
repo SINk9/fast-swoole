@@ -4,8 +4,31 @@
  * @Author: sink
  * @Date:   2020-07-05 17:41:09
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-10 16:29:00
+ * @Last Modified time: 2020-07-11 12:36:01
  */
+    /**
+     * 获取毫秒时间戳
+     * @return string
+     */
+    function getMicrotime()
+    {
+        $time = microtime(true);
+        return sprintf('%.3f', $time);
+    }
+
+
+    /**
+     * 实例化服务层
+     */
+    function service($name = '')
+    {
+        static $_model = array();
+        $class         = "App\Service\\{$name}Service";
+        if (isset($_model[$class]) == false) {
+            $_model[$class] = new $class();
+        }
+        return $_model[$class];
+    }
 
 
    /**

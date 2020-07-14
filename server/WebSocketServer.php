@@ -4,7 +4,7 @@
  * @Author: sink
  * @Date:   2019-08-05 11:53:51
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-10 10:40:14
+ * @Last Modified time: 2020-07-14 14:46:56
  */
 
 namespace Server;
@@ -130,7 +130,10 @@ abstract class WebSocketServer extends HttpServer
         $server_port = $this->getServerPort($fd);
         $uid = $this->getUidFromFd($fd);
 
+
         $pack = $this->portManager->getPack($server_port);
+
+
         //反序列化，出现异常断开连接
         try {
             $client_data = $pack->unPack($data);
@@ -138,7 +141,6 @@ abstract class WebSocketServer extends HttpServer
             $pack->errorHandle($e, $fd);
             return null;
         }
-
         //路由 控制器
         $route = $this->portManager->getRoute($server_port);
         try {

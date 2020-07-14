@@ -4,7 +4,7 @@
  * @Author: sink
  * @Date:   2019-08-07 15:17:24
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-10 16:48:26
+ * @Last Modified time: 2020-07-14 12:02:24
  */
 
 namespace Server\Routes;
@@ -65,7 +65,7 @@ class HttpRoute implements IRoute
      */
     public function getControllerName()
     {
-        return '/http/' . $this->client_data->controller_name;
+        return 'Http/' . $this->client_data->controller_name;
     }
 
     /**

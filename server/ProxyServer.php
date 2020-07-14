@@ -5,14 +5,13 @@
  * @Author: sink
  * @Date:   2019-08-05 11:53:03
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-10 12:49:57
+ * @Last Modified time: 2020-07-14 12:06:45
  */
 namespace Server;
 use Server\Memory\Container;
 use Server\Asyn\Mysql\MysqlPool;
 use Server\Asyn\Redis\RedisPool;
 use Server\Process\ProcessManager;
-use Server\Process\HelpProcess;
 use Server\Process\TimerTaskProcess;
 use Server\TimerTasks\TimerTask;
 use Server\TimerTasks\Timer;
@@ -202,8 +201,6 @@ class ProxyServer extends WebSocketServer
      */
     public function startProcess()
     {
-
-        ProcessManager::getInstance()->addProcess(HelpProcess::class);
         //timerTask
         ProcessManager::getInstance()->addProcess(TimerTaskProcess::class);
     }

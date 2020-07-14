@@ -69,7 +69,7 @@ class RedisConnection extends BaseConnection implements ConnectionInterface
             //$arguments = RedisQueryHelp::arguments([$name,$arguments]);
             $result = call_user_func_array([$this->connection, $name], $arguments);
         } catch (\Throwable $exception) {
-            LogEcho('RedisCall:', $exception->getMessage());
+            //LogEcho('RedisCall:', $exception->getMessage());
             $result = $this->retry($name, $arguments, $exception);
         }
 
@@ -80,7 +80,7 @@ class RedisConnection extends BaseConnection implements ConnectionInterface
     {
 
         if (ProxyServer::getInstance()->isTaskWorker()) {
-            LogEcho('RedisConnection:','Sync');
+            //LogEcho('RedisConnection:','Sync');
             return $this->getSync();
         }
 

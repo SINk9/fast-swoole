@@ -4,7 +4,7 @@
  * @Author: sink
  * @Date:   2020-07-09 14:21:21
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-10 10:00:52
+ * @Last Modified time: 2020-07-14 15:17:02
  */
 
 namespace App;
@@ -13,6 +13,8 @@ use Server\ProxyServer;
 use App\Process\CustomProcess;
 use App\Timer\Timing;
 use Server\Process\ProcessManager;
+use Server\Process\HelpProcess;
+
 
 class AppServer extends ProxyServer
 {
@@ -32,7 +34,10 @@ class AppServer extends ProxyServer
      */
     public function startProcess()
     {
-    	//ProcessManager::getInstance()->addProcess(CustomProcess::class);
+
+        //ProcessManager::getInstance()->addProcess(HelpProcess::class); //文件热加载帮助进程
+
+    	ProcessManager::getInstance()->addProcess(CustomProcess::class); ////自定义进程
         parent::startProcess();
     }
 

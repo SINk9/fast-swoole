@@ -5,7 +5,7 @@
  * @Author: 不再迟疑
  * @Date:   2019-08-12 13:37:05
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-09 21:19:33
+ * @Last Modified time: 2020-07-14 10:03:00
  */
 
 namespace Server\Events;
@@ -108,7 +108,6 @@ class EventDispatcher
      */
     private function invokeEvent($event)
     {
-        LogEcho('invokeEvent:',json_encode($this->_eventListeners));
         if (array_key_exists($event->type, $this->_eventListeners)) {
             $listeners = $this->_eventListeners [$event->type];
         } else {

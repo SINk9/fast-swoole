@@ -5,7 +5,7 @@
  * @Author: sink
  * @Date:   2020-07-09 16:16:27
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-10 17:08:40
+ * @Last Modified time: 2020-07-14 09:16:45
  */
 
 namespace App\Tasks;
@@ -24,43 +24,6 @@ class Deal extends Task
 	public function action()
 	{
 		LogEcho('Timer:Deal:Action',time());
-	}
-
-	/**
-	 * * 成交检测
-	 * @return [type]
-	 */
-	private function check()
-	{
-
-	}
-
-	/**
-	 * * 检测设置中奖条件
-	 * @return [type]
-	 */
-	private function check_set_reward()
-	{
-
-	}
-
-	/**
-	 * * 检测保底值条件
-	 * @return [type]
-	 */
-	private function check_base_value()
-	{
-
-	}
-
-
-	/**
-	 * * 成交
-	 * @return [type]
-	 */
-	public function handler()
-	{
-
 	}
 
 }

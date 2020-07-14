@@ -4,7 +4,7 @@
  * @Author: sink
  * @Date:   2019-08-07 15:17:24
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-10 16:48:49
+ * @Last Modified time: 2020-07-14 13:47:33
  */
 
 namespace Server\Routes;
@@ -30,13 +30,13 @@ class WsRoute implements IRoute
      */
     public function handleClientData($data)
     {
-        $this->client_data = $data;
-        if (isset($this->client_data->controller_name) && isset($this->client_data->method_name)) {
-            return $this->client_data;
-        } else {
+        if (empty($data['controller_name']) && empty($data['method_name'])) {
             throw new SwooleException('route 数据缺少必要字段');
         }
-
+        $this->client_data->controller_name = $data['controller_name'];
+        $this->client_data->method_name = $data['method_name'];
+        $this->client_data->params = $data['params'];
+        return $this->client_data;
     }
 
     /**
@@ -52,7 +52,7 @@ class WsRoute implements IRoute
      */
     public function getControllerName()
     {
-        return '/ws/' . $this->client_data->controller_name;
+        return 'Ws/' . $this->client_data->controller_name;
     }
 
     /**
@@ -87,6 +87,8 @@ class WsRoute implements IRoute
      */
     public function errorHandle(\Throwable $e, $fd)
     {
+        $errorMsg = 'Error on line '.$e->getLine().' in '.$e->getFile() . ' Message:'.$e->getMessage();
+        LogEcho('onSwooleRequest:', $errorMsg);
         ProxyServer::getInstance()->send($fd, "Error:" . $e->getMessage(), true);
         ProxyServer::getInstance()->close($fd);
     }

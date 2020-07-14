@@ -4,7 +4,7 @@ declare(strict_types=1);
  * @Author: sink
  * @Date:   2019-08-05 14:35:15
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-10 14:05:01
+ * @Last Modified time: 2020-07-14 10:58:04
  */
 
 namespace Server\Asyn\Mysql;
@@ -77,7 +77,7 @@ class MysqlConnection extends BaseConnection implements DbConnectionInterface
     public function getActiveConnection(): DbConnectionInterface
     {
         if (ProxyServer::getInstance()->isTaskWorker()) {
-            LogEcho('RedisConnection:','Sync');
+            //LogEcho('MysqlConnection:','Sync');
             return $this->getSync();
         }
 

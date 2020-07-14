@@ -4,7 +4,7 @@
  * @Author: sink
  * @Date:   2019-08-05 11:54:05
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-10 13:01:02
+ * @Last Modified time: 2020-07-14 12:02:58
  */
 
 namespace Server;
@@ -104,12 +104,15 @@ abstract class HttpServer extends SwooleServer
                     throw new SwooleNotFoundException('no controller');
                 }
             } catch (\Throwable $e) {
-                LogEcho('onSwooleRequest:', $e->getMessage());
+
+                $errorMsg = 'Error on line '.$e->getLine().' in '.$e->getFile() . 'Message:'.$e->getMessage();
+                LogEcho('onSwooleRequest:', $errorMsg);
                 $route->errorHttpHandle($e, $request, $response);
             }
 
         } catch (Exception $e) {
-            LogEcho('onSwooleRequest:', $e->getMessage());
+            $errorMsg = 'Error on line '.$e->getLine().' in '.$e->getFile() . 'Message:'.$e->getMessage();
+            LogEcho('onSwooleRequest:', $errorMsg);
             //被中断
         }
 

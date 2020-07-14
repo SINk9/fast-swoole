@@ -5,7 +5,7 @@
  * @Author: sink
  * @Date:   2019-08-09 11:15:36
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-05 17:59:31
+ * @Last Modified time: 2020-07-14 12:31:42
  */
 namespace Server\Packs;
 
@@ -30,7 +30,7 @@ class NonJsonPack implements IPack
 
     public function unPack($data)
     {
-        $value = json_decode($data);
+        $value = json_decode($data, true);
         if (empty($value)) {
             throw new SwooleException('json unPack 失败');
         }
@@ -54,6 +54,8 @@ class NonJsonPack implements IPack
 
     public function errorHandle(\Throwable $e, $fd)
     {
+        $errorMsg = 'Error on line '.$e->getLine().' in '.$e->getFile() . 'Message:'.$e->getMessage();
+        LogEcho('ws pack:', $errorMsg);
         ProxyServer::getInstance()->close($fd);
     }
 }

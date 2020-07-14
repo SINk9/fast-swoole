@@ -4,11 +4,12 @@
  * @Author: sink
  * @Date:   2019-08-13 19:40:01
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-10 18:25:49
+ * @Last Modified time: 2020-07-13 17:32:30
  */
 namespace App\Controllers;
 use Server\Controllers\Controller;
 use App\Consts\CacheKey;
+use App\Service\Compete\RobotService;
 
 class Test extends Controller
 {
@@ -18,7 +19,21 @@ class Test extends Controller
      */
     public function index()
     {
-        //竞拍数据
+        //机器人用户
+        // $robot_user = $this->db->select('select * from xq_compete_robot;');
+        // $robot_data = [];
+        // foreach ($robot_user as $key => $value) {
+        //     $robot_data[$value->id] = json_encode([
+        //         'nickname' => $value->nickname,
+        //         'avatar'   => $value->avatar,
+        //         'place'    => $value->place,
+        //         'uid'      => $value->id,
+        //     ]);
+        // }
+        // $result = $this->redis->hmset(CacheKey::ROBOT_USER,$robot_data);
+
+
+        // //竞拍数据
         // $data = [
         //     'goods_id'          => 1,
         //     'down_time'         => 10,
@@ -29,79 +44,101 @@ class Test extends Controller
         //     'visit'             => 0,
         //     'default_count'     => 1,
         //     'ensure'            => 100,
-        //     'user_one_ensure'   => 80,
-        //     'user_many_ensure'  => 90,
         //     'is_next'           => 1,
         //     'start_time'        => 0,
         //     'end_time'          => 0,
         //     'issue_end'         => 0,
-        //     'min_deal'          => 100,
-        //     'max_deal'          => 1000,
-        //     'content'           => '',
+        //     'min_deal'          => 1000,
+        //     'max_deal'          => 8000,
         //     'stock'             => 100,
         //     'created_at'        => '1594344418'
         // ];
-        // $$count = $this->redis->hlen(CacheKey::COMPETE_DATA);
-        // $$count = $$count + 1;
-        // $redis = $this->redis->hset(CacheKey::COMPETE_DATA,$$count,json_encode($data));
-        // //$rs = $this->redis->hget(CacheKey::COMPETE_DATA,$$count);
+        // $count           = $this->redis->hlen(CacheKey::COMPETE_DATA);
+        // $data['goods_id'] = $data['goods_id'] + $count;
+        // $redis            = $this->redis->hset(CacheKey::COMPETE_DATA, $data['goods_id'], json_encode($data));
 
-        //进行中竞拍数据
+        // //进行中竞拍数据
         // $data = [
         //     'goods_id'          => 1,
         //     'issue'             => 1,
-        //     'now_price'         => 1.12,
-        //     'end_time'          => '1594352644',
-        //     'last_buy_uid'      => '1001',
+        //     'now_price'         => 0.00,
+        //     'end_time'          => 0,
         //     'down_time'         => '10',
         //     'initial_down_time' => '120',
         //     'initial_price'     => '0.00',
         //     'range'             => 0.1,
-        //     'cost'              => 1,
+        //     'cost'              => 100,
         //     'start_time'        => '1594352752',
-        //     'status'            => '1',
+        //     'status'            => 1,
         //     'sort'              => '100',
-        //     'nickname'          => '摆渡人',
-        //     'title'             => '啦啦啦啦德玛西亚',
-        //     'thumb'             => '/goods/2222.png',
+        //     'last_buy_uid'      => 0,
         // ];
-        // $count = $this->redis->hlen(CacheKey::COMPETE_UNDERWAY);
-        // $count = $count + 1;
+        // $count            = $this->redis->hlen(CacheKey::COMPETE_UNDERWAY);
+        // $count            = $count + 1;
         // $data['goods_id'] = $count;
-        // $redis = $this->redis->hset(CacheKey::COMPETE_UNDERWAY,$count,json_encode($data));
-        // $rs = $this->redis->hget(CacheKey::COMPETE_UNDERWAY,$count);
-        // $this->HttpResponse->success(json_decode($rs));
-
+        // $redis            = $this->redis->hset(CacheKey::COMPETE_UNDERWAY,$count,json_encode($data));
 
         // //商品数据
+        // $title = '商品名称:';
         // $data = [
         //     'goods_id' => 1,
-        //     'title'    => '阿拉啦啦啦德玛西亚~',
+        //     'title'    => $title,
         //     'desc'     => '商品描述。。。。。。。。。。',
-        //     'cover'    => '/goods/1.png',
+        //     'thumb'    => '/goods/1.png',
         //     'pics'     => '/goods/2.png,/goods/3.png,/goods/4.png',
         //     'attr'     => '粉色 128G',
-        //     'price'    => '188.00',
+        //     'price'    => '1889.00',
         // ];
-        // $count = $this->redis->hlen(CacheKey::GOODS_INFO);
-        // $count = $count + 1;
+        // $count            = $this->redis->hlen(CacheKey::GOODS_INFO);
+        // $count            = $count + 1;
         // $data['goods_id'] = $count;
-        // $redis = $this->redis->hset(CacheKey::GOODS_INFO,$count,json_encode($data));
-        // $rs = $this->redis->hget(CacheKey::GOODS_INFO,$count);
+        // $data['title']    = $title . $count;
+        // $redis            = $this->redis->hset(CacheKey::GOODS_INFO,$count,json_encode($data));
+        // //$rs             = $this->redis->hget(CacheKey::GOODS_INFO,$count);
 
 
-        //用户数据
-        $data = [1,2,3,4,5,6,7,8,9,10];
-        $rs = $this->redis->lpush(CacheKey::COMPETE_JOIN_RECODE_LOG,json_encode($data));
+        // //用户数据
+        // $nickname = '用户:';
+        // $data = [
+        //     'uid'      => 100000,
+        //     'nickname' => $nickname,
+        //     'avatar'   => '/avatar/1.png',
+        //     'place'    => '湖北武汉',
+        // ];
+        // $count            = $this->redis->hlen(CacheKey::USER_INFO);
+        // $data['uid']      = $data['uid'] + $count;
+        // $data['nickname'] = $nickname . $count;
+        // $redis            = $this->redis->hset(CacheKey::USER_INFO,$data['uid'],json_encode($data));
 
-        $this->HttpResponse->success($rs);
 
+        // //竞拍机器人设置信息
+        // $data = [
+        //     'goods_id'         => 1,
+        //     'is_reward'        => 1,
+        //     'min_join_time'    => 7,
+        //     'max_join_time'    => 9,
+        //     'a_min_join_robot' => 10,
+        //     'a_max_join_robot' => 30,
+        //     'a_min_join_count' => 10,
+        //     'a_max_join_count' => 30,
+        //     'b_min_join_robot' => 20,
+        //     'b_max_join_robot' => 50,
+        //     'b_min_join_count' => 20,
+        //     'b_max_join_count' => 50,
+        //     'c_min_join_robot' => 10,
+        //     'c_max_join_robot' => 30,
+        //     'c_join_count'     => '100,200,300,400,500,150,250,350,450,550',
+        //     'status'           => 1
+        // ];
+        // $count = $this->redis->hlen(CacheKey::ROBOT_SETING);
+        // $data['goods_id'] = $data['goods_id'] + $count;
+        // $redis = $this->redis->hset(CacheKey::ROBOT_SETING, $data['goods_id'], json_encode($data));
 
+        //$reslut = RobotService::generate_join_list(1, $this->redis);
+        //$reslut = ['message' => 'hello world'];
+        //$this->HttpResponse->success($reslut);
 
-        //$data = $this->db->table('user_idcard')->get();
         // $data = $this->db->select('select * from init_user_idcard;');
-        // $this->HttpResponse->success($data);
-        //$data = [1,2,2];
         //$this->response->header("Content-Type", "text/html; charset=utf-8");
         //$this->response->header("Content-Type", "application/json");
         // $this->response->header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");

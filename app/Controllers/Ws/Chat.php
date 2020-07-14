@@ -4,7 +4,7 @@
  * @Author: sink
  * @Date:   2020-07-09 11:20:05
  * @Last Modified by:   sink <21901734@qq.com>
- * @Last Modified time: 2020-07-09 11:21:18
+ * @Last Modified time: 2020-07-14 12:11:40
  */
 namespace App\Controllers\Ws;
 use Server\Controllers\Controller;
@@ -19,7 +19,11 @@ class Chat extends Controller
 	 */
 	public function keep()
 	{
-
+		$data = [
+			'cmd'     => 'keep',
+			'message' => '德玛西亚~',
+		];
+		$this->send($data);
 	}
 }
 
