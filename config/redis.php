@@ -14,7 +14,7 @@ return [
 		
 	    'default' => [
 	        'host'           => '127.0.0.1',
-	        'auth'           => '',
+	        'auth'           => '153246',
 	        'port'           => 6379,
 	        'db'             => 2,
 	        'timeout'	     => 0.0,

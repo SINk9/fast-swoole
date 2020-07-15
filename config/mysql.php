@@ -15,11 +15,11 @@ return [
         'active'  => 'default',
         'default' => [
             'driver'    => 'mysql',
-            'host'      => '127.0.0.1',
+            'host'      => '121.196.52.20',
             'port'      => '3306',
             'database'  => 'xiaoq',
             'username'  => 'root',
-            'password'  => '123456',
+            'password'  => 'xiaoq2020',
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => 'init_',

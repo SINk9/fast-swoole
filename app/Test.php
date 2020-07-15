@@ -33,8 +33,11 @@ class Test
         	echo 'hhh';
         }
         $redisContainer = $redisPool->getSync();
-        $reslut = RobotService::generate_join_list(1, $redisContainer);
-        var_dump($reslut);
+        for ($i=1; $i <= 5; $i++) { 
+      		$reslut = RobotService::generate_join_list(1, $redisContainer);
+        	var_dump($reslut);
+        }
+ 
 
 	}
 }

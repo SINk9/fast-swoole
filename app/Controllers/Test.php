@@ -20,17 +20,17 @@ class Test extends Controller
     public function index()
     {
         //机器人用户
-        // $robot_user = $this->db->select('select * from xq_compete_robot;');
-        // $robot_data = [];
-        // foreach ($robot_user as $key => $value) {
-        //     $robot_data[$value->id] = json_encode([
-        //         'nickname' => $value->nickname,
-        //         'avatar'   => $value->avatar,
-        //         'place'    => $value->place,
-        //         'uid'      => $value->id,
-        //     ]);
-        // }
-        // $result = $this->redis->hmset(CacheKey::ROBOT_USER,$robot_data);
+        $robot_user = $this->db->select('select * from xq_compete_robot;');
+        $robot_data = [];
+        foreach ($robot_user as $key => $value) {
+            $robot_data[$value->id] = json_encode([
+                'nickname' => $value->nickname,
+                'avatar'   => $value->avatar,
+                'place'    => $value->place,
+                'uid'      => $value->id,
+            ]);
+        }
+        $result = $this->redis->hmset(CacheKey::ROBOT_USER,$robot_data);
 
 
         // //竞拍数据
