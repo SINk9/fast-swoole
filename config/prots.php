@@ -14,7 +14,7 @@ return [
         [
             'socket_type'           => PortManager::SOCK_WS,
             'socket_name'           => '0.0.0.0',
-            'socket_port'           => 8081,
+            'socket_port'           => 9050,
             'route_tool'            => 'WsRoute',
             'pack_tool'             => 'NonJsonPack', //数据包格式
             'opcode'                => PortManager::WEBSOCKET_OPCODE_TEXT,
@@ -28,14 +28,14 @@ return [
         [
             'socket_type'           => PortManager::SOCK_HTTP,
             'socket_name'           => '0.0.0.0',
-            'socket_port'           => 8082,
+            'socket_port'           => 9051,
             'route_tool'            => 'NormalRoute', //路由
             'middlewares'           => [], //中间件
         ],
         [
             'socket_type'           => PortManager::SOCK_HTTP,
             'socket_name'           => '0.0.0.0',
-            'socket_port'           => 8083,
+            'socket_port'           => 9052,
             'route_tool'            => 'HttpRoute', //路由
             'middlewares'           => [], //中间件
         ],
