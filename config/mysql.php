@@ -18,7 +18,7 @@ return [
             'host'      => '121.196.52.20',
             'port'      => '3306',
             'database'  => 'xiaoq',
-            'username'  => 'root',
+            'username'  => 'develop',
             'password'  => 'xiaoq2020',
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
