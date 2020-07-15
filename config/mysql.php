@@ -22,7 +22,7 @@ return [
             'password'  => 'xiaoq2020',
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
-            'prefix'    => 'init_',
+            'prefix'    => 'xq_',
             'pool'      => [
                 'min_connections' => 1,
                 'max_connections' => 10,
